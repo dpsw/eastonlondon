@@ -1,0 +1,20 @@
+@mixin font-main-text {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+@mixin font-regular-text {
+  font-family: 'Oxygen', sans-serif;
+}
+
+@mixin only-mobile {
+  @media (max-width: (599px)) {
+    @content;
+  }
+}
+@mixin tablets-and-desktop {
+  @media (min-width: (600px)) {
+    @content;
+  }
+}

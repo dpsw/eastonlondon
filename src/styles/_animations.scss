@@ -1,0 +1,35 @@
+@include only-mobile {
+  .slide-fade-enter-active {
+    transition: all .3s ease;
+
+  }
+  .slide-fade-leave-active {
+    transition: all .5s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .slide-fade-enter, .slide-fade-leave-to {
+    transform: translateY(46px);
+  }
+}
+
+@include only-mobile {
+  .slide-page-enter-active {
+    transition: all .3s ease;
+  }
+  .slide-page-leave-active {
+    transition: all .5s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .slide-page-enter, .slide-page-leave-to {
+    transform: translateY(100vh);
+  }
+}
+@include tablets-and-desktop {
+  .slide-page-enter-active {
+    transition: all .3s ease;
+  }
+  .slide-page-leave-active {
+    transition: all .5s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .slide-page-enter, .slide-page-leave-to {
+    transform: translateX(375px);
+  }
+}

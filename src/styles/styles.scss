@@ -1,0 +1,123 @@
+@import "~vue-select/dist/vue-select.css";
+@import 'mixins';
+@import 'fonts';
+@import 'variables';
+@import 'animations';
+@import 'vendor';
+
+body {
+  margin: 0;
+}
+
+#app {
+  * {
+    box-sizing: border-box;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  @include only-mobile {
+    padding-bottom: 50px;
+  }
+}
+
+.widget-open {
+  &__link {
+    @include font-main-text;
+    border-top-left-radius: $border-radius;
+    border-top-right-radius: $border-radius;
+    padding: 15px 74px;
+    transition: all 0.5s ease-in-out;
+    white-space: nowrap;
+    letter-spacing: 0.21em;
+    text-decoration: none;
+    min-height: 20px;
+    z-index: 90001;
+    text-transform: uppercase;
+    transform: translate(-50%,-50%) rotate(-90deg);
+    background: $primary-color;
+    color: $black;
+    cursor: pointer;
+    position: fixed;
+    right: -255px;
+    top: 50%;
+
+    @include only-mobile {
+      transform: none;
+      position: initial;
+      margin: 0;
+    }
+  }
+  @include only-mobile {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    position: absolute;
+    bottom: 0;
+  }
+}
+
+.widget {
+  background-color: $background-color;
+  height: 100vh;
+  width: 375px;
+  position: fixed;
+  right: 0;
+  @include only-mobile {
+    width: 100%;
+  }
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 21px 22px 34px;
+  &__link {
+    width: 33px;
+    cursor: pointer;
+  }
+  &__logo {
+    width: 101px;
+  }
+}
+
+.app-body {
+  padding: 0 40px;
+}
+
+.input {
+  margin-bottom: 30px;
+
+  &__label {
+    @include font-main-text;
+    display: block;
+    color: $primary-text-color;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 11px 0;
+  }
+
+  &__dates {
+    display: flex;
+    flex-wrap: nowrap;
+    border: 1px solid $additional-border-color;
+    border-radius: 4px;
+  }
+
+  &__date-item {
+    @include font-regular-text;
+    font-weight: 600;
+    text-align: center;
+    color: $additional-text-color;
+    border-right: 1px solid $additional-border-color;
+    padding: 3px 0;
+    cursor: pointer;
+
+    &_selected {
+      color: $black;
+      background-color: $primary-color;
+    }
+  }
+}

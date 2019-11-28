@@ -1,32 +1,34 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <transition name="slide-page">
+      <div class="widget" v-if="widgetIsOpen">
+        <router-view/>
+      </div>
+    </transition>
+    <transition name="slide-fade">
+      <div class="widget-open" v-if="!widgetIsOpen">
+        <div class="widget-open__link" @click="openWidget">
+          Book Now!
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+export default {
+  name: 'BookingApp',
 
-#nav {
-  padding: 30px;
+  data() {
+    return {
+      widgetIsOpen: false,
+    };
+  },
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
+  methods: {
+    openWidget() {
+      this.widgetIsOpen = true;
+    },
+  },
+};
+</script>
