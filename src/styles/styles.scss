@@ -61,9 +61,9 @@ body {
 
 .widget {
   background-color: $background-color;
-  height: 100vh;
+  min-height: 100vh;
   width: 375px;
-  position: fixed;
+  position: absolute;
   right: 0;
   @include only-mobile {
     width: 100%;
@@ -73,10 +73,14 @@ body {
 .app-header {
   display: flex;
   justify-content: space-between;
-  padding: 21px 22px 34px;
+  align-items: flex-start;
+  padding: 21px 22px 17px;
   &__link {
-    width: 33px;
+    width: 43px;
     cursor: pointer;
+    svg {
+      height: 34px;
+    }
   }
   &__logo {
     width: 101px;
@@ -84,12 +88,15 @@ body {
 }
 
 .app-body {
-  padding: 0 40px;
+  padding: 0 47px;
 }
 
 .input {
-  margin-bottom: 30px;
+  margin-bottom: 19px;
 
+  &_less-margin {
+    margin-bottom: 5px;
+  }
   &__label {
     @include font-main-text;
     display: block;
@@ -99,16 +106,40 @@ body {
     padding: 11px 0;
   }
 
+  &__field {
+    @include font-regular-text;
+    font-size: 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid $border-color;
+    color: $additional-text-color;
+    font-weight: 600;
+    width: 100%;
+    padding: 6px 0;
+
+    &::placeholder {
+      color: $gray;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    &:focus {
+      outline: 0;
+    }
+  }
+
   &__dates {
     display: flex;
     flex-wrap: nowrap;
     border: 1px solid $additional-border-color;
     border-radius: 4px;
+    margin-top: 6px;
   }
 
   &__date-item {
     @include font-regular-text;
+    font-size: 14px;
     font-weight: 600;
+    text-transform: uppercase;
     text-align: center;
     color: $additional-text-color;
     border-right: 1px solid $additional-border-color;
@@ -120,4 +151,130 @@ body {
       background-color: $primary-color;
     }
   }
+
+  &__times {
+    display: inline-flex;;
+    flex-wrap: wrap;
+    border: 1px solid $additional-border-color;
+    border-radius: 4px;
+    max-width: 100% ;
+  }
+
+  &__time-item {
+    @include font-regular-text;
+    font-weight: 600;
+    text-align: center;
+    color: $additional-text-color;
+    border-right: 1px solid $additional-border-color;
+    padding: 10px;
+    cursor: pointer;
+
+    &_selected {
+      color: $black;
+      background-color: $primary-color;
+    }
+  }
+}
+
+.radio-block {
+  padding: 2px 0 4px;
+  margin: 0;
+  color: $gray;
+
+  &__inputs {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+
+.radio {
+  @include font-regular-text;
+  font-size: 14px;
+  font-weight: 600;
+  position: relative;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  display: flex;
+  align-items: center;
+  color: $gray;
+  padding: 0 0 0 30px;
+
+  &__input {
+    display: none;
+  }
+
+  &__label:before {
+    content: " ";
+    height: 21px;
+    width: 21px;
+    position: absolute;
+    top: -2px;
+    left: 0;
+    border:  1px solid $additional-border-color;
+    border-radius: 4px;
+  }
+  &__input:checked ~ &__label:before {
+    background: $primary-color;
+  }
+  &__input:checked ~ &__label:after {
+    content: "";
+    width: 5px;
+    height: 10px;
+    transform: rotate(45deg);
+    background-color: transparent;
+    border-bottom-style: solid;
+    border-bottom-width: 2px;
+    border-right-style: solid;
+    border-right-width: 2px;
+    border-color: $additional-border-color;
+    display: block;
+    position: absolute;
+    top: 2px;
+    left: 9px;
+    transition: 100ms ease-in-out;
+    //box-shadow: $white 7px -5px 0px 0px;
+  }
+
+  &__label:after:hover,
+  &__label:after:active {
+    border: 4px solid $additional-border-color;
+  }
+}
+
+.button {
+  @include font-main-text;
+  border: none;
+  border-radius: $border-radius;
+  transition: all 0.5s ease-in-out;
+  white-space: nowrap;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: $black;
+  background: $primary-color;
+  cursor: pointer;
+  padding: 15px 0;
+  margin-top: 20px;
+  width: 100%;
+
+  &:focus {
+    outline: 0;
+  }
+}
+
+.title {
+  @include font-main-text;
+  color: $primary-text-color;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.text {
+  @include font-regular-text;
+
+  color: $additional-text-color;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin: 15px 0;
+  line-height: 23px;
 }

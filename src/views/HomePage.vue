@@ -8,13 +8,29 @@
       <base-input-select v-model="servicesField"></base-input-select>
       <base-input-select v-model="masterField"></base-input-select>
 
-      <base-input-date-select v-model="dateField"></base-input-date-select>
+      <base-input-date-select
+              v-model="dateField"
+              :is-less-margin="selectedDate !== 0"
+      ></base-input-date-select>
 
       <transition name="slide-fade">
         <base-input-time-select
                 v-if="selectedDate"
                 v-model="timeField"></base-input-time-select>
       </transition>
+
+       <base-input-text
+               v-model="emailField"
+               input-type="email"
+       >
+       </base-input-text>
+       <base-input-mask v-model="phoneField"></base-input-mask>
+
+       <base-input-checkbox v-model="agreeWithTermsField"></base-input-checkbox>
+
+        <button class="button" @click="goNext">
+            BOOK ME NOW!
+        </button>
     </app-body>
   </div>
 </template>
@@ -23,7 +39,11 @@
 import BaseInputSelect from '@/components/inputs/BaseInputSelect.vue';
 import BaseInputDateSelect from '@/components/inputs/BaseInputDateSelect.vue';
 import BaseInputTimeSelect from '@/components/inputs/BaseInputTimeSelect.vue';
+import BaseInputCheckbox from '@/components/inputs/BaseInputCheckbox.vue';
+import BaseInputMask from '@/components/inputs/BaseInputMask.vue';
+import BaseInputText from '@/components/inputs/BaseInputText.vue';
 import InputModel from '@/models/InputModel';
+import { PHONE_MASK } from '@/config/config';
 
 export default {
   name: 'HomePage',
@@ -32,6 +52,9 @@ export default {
     BaseInputSelect,
     BaseInputDateSelect,
     BaseInputTimeSelect,
+    BaseInputCheckbox,
+    BaseInputMask,
+    BaseInputText,
   },
 
   data() {
@@ -41,6 +64,9 @@ export default {
       selectedMaster: 0,
       selectedDate: 0,
       selectedTime: 0,
+      email: '',
+      phone: '',
+      agreeWithTerms: true,
 
       locationList: [
         {
@@ -106,11 +132,14 @@ export default {
         },
         {
           label: '18:10',
-          id: 1,
+          id: 2,
         },
       ],
 
       dateStart: new Date(),
+
+      phoneErrorMessage: '',
+      emailErrorMessage: '',
     };
   },
 
@@ -203,6 +232,58 @@ export default {
       set(value) {
         this.selectedTime = value;
       },
+    },
+
+    agreeWithTermsField: {
+      get() {
+        const field = new InputModel(
+          '',
+          this.agreeWithTerms,
+          '',
+        );
+        field.setValues([{ id: 1, label: 'I agree to the Terms & Conditions' }]);
+        return field;
+      },
+      set(value) {
+        this.agreeWithTerms = value;
+      },
+    },
+
+    emailField: {
+      get() {
+        const field = new InputModel(
+          'Your email',
+          this.email,
+          this.emailErrorMessage,
+        );
+        return field;
+      },
+      set(value) {
+        this.email = value;
+      },
+    },
+
+    phoneField: {
+      get() {
+        const field = new InputModel(
+          'Your phone no.',
+          this.phone,
+          this.phoneErrorMessage,
+        );
+        field.setMask(PHONE_MASK);
+        return field;
+      },
+      set(value) {
+        // this.phoneErrorMessage = value.length === PHONE_MASK.length
+        //   ? '' : `Invalid phone code: ${PHONE_MASK}`;
+        this.phone = value;
+      },
+    },
+  },
+
+  methods: {
+    goNext() {
+      this.$router.push('/success');
     },
   },
 };

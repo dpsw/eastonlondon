@@ -1,6 +1,8 @@
 <template>
     <div class="input-block">
-        <div class="input">
+        <div class="input"
+             :class="isLessMargin ? 'input_less-margin' : ''"
+        >
             <label class="input__label">{{ value.label }}</label>
 
             <div class="input__dates">
@@ -38,6 +40,9 @@ export default {
     value: {
       type: InputModel,
     },
+    isLessMargin: {
+      type: Boolean,
+    },
   },
 
   computed: {
@@ -58,6 +63,7 @@ export default {
      * @return {String}
      */
     formatDate(date) {
+      if (!date && !(date instanceof Date)) { return ''; }
       const options = { weekday: 'short', day: '2-digit' };
       return date.toLocaleDateString('en-US', options).split(' ').reverse().join(' ');
     },

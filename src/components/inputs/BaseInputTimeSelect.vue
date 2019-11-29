@@ -1,13 +1,17 @@
 <template>
     <div class="input-block">
-        <div class="input">
+        <div class="input"
+             v-for="(times, index) in timesByFourElements"
+             :key="`times-block-${index}`"
+             :class="isNotLastBlock(index) ? '' : 'input_less-margin' "
+        >
 
             <div class="input__times">
                 <div
                     class="input__time-item"
                     v-for="time in times"
                     :key="formatTime(time)"
-                    :class="isSelected(time) ? 'input__time-item_selected':''"
+                    :class="isSelectedTime(time) ? 'input__time-item_selected':''"
                     @click="setSelected(time)"
                 >
                     {{ formatTime(time) }}
@@ -25,12 +29,19 @@
 <script>
 import BaseError from './BaseError.vue';
 import InputModel from '@/models/InputModel';
+import { chunk } from '@/helpers/array';
 
 export default {
   name: 'BaseInputTimeSelect',
 
   components: {
     BaseError,
+  },
+
+  data() {
+    return {
+      countTimesInOneRow: 4,
+    };
   },
 
   props: {
@@ -40,8 +51,8 @@ export default {
   },
 
   computed: {
-    dates() {
-      return this.value.values;
+    timesByFourElements() {
+      return chunk(this.value.values, this.countTimesInOneRow);
     },
   },
 
@@ -57,7 +68,7 @@ export default {
      * @return {String}
      */
     formatTime(time) {
-      return time;
+      return time.label;
     },
 
     /**
@@ -66,8 +77,18 @@ export default {
      * @param {String} time
      * @return {Boolean}
      */
-    isSelectedDate(time) {
-      return this.formatDate(time) === this.formatDate(this.value.value);
+    isSelectedTime(time) {
+      return this.formatTime(time) === this.formatTime(this.value.value);
+    },
+
+    /**
+     * Check if current block is last
+     *
+     * @param {String} index
+     * @return {Boolean}
+     */
+    isNotLastBlock(index) {
+      return index >= this.timesByFourElements.length - 1;
     },
   },
 };
