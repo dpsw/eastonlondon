@@ -93,6 +93,7 @@ body {
 
 .input {
   margin-bottom: 19px;
+  position: relative;
 
   &_less-margin {
     margin-bottom: 5px;
@@ -125,6 +126,22 @@ body {
     &:focus {
       outline: 0;
     }
+  }
+
+  &__icon {
+    position: absolute;
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+  }
+
+  &__svg-selectable{
+    cursor: pointer;
+  }
+
+  &__svg-colored {
+    fill: $additional-text-color;
+    opacity: 1;
   }
 
   &__dates {
@@ -253,8 +270,14 @@ body {
   background: $primary-color;
   cursor: pointer;
   padding: 15px 0;
-  margin-top: 20px;
+  margin-top: 18px;
   width: 100%;
+
+  &_transparent {
+    background: transparent;
+    border: 1px solid $additional-primary-color;
+    color: $additional-primary-color
+  }
 
   &:focus {
     outline: 0;
@@ -266,6 +289,9 @@ body {
   color: $primary-text-color;
   text-transform: uppercase;
   text-align: center;
+  &__with-margin {
+    margin-bottom: 15px;
+  }
 }
 
 .text {
@@ -277,4 +303,46 @@ body {
   text-align: center;
   margin: 15px 0;
   line-height: 23px;
+}
+
+.booking-list {
+  &__item {
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid $gray2;
+
+    &_last {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-bottom: none;
+    }
+  }
+
+  &__info {
+    @include font-regular-text;
+    font-size: 16px;
+    font-weight: 600;
+    color: $additional-text-color;
+  }
+
+  &__actions {
+    @include font-regular-text;
+    font-weight: 600;
+    display: flex;
+    align-items: flex-start;
+    margin-top: 15px;
+  }
+
+  &__change {
+    color: $additional-primary-color;
+    padding-right: 8px;
+    border-right: 2px solid $gray2;
+    cursor: pointer;
+  }
+
+  &__cancel {
+    color: $gray2;
+    padding-left: 8px;
+    cursor: pointer;
+  }
 }

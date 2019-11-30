@@ -1,0 +1,2 @@
+export const SET_WIDGET_IS_OPEN = 'SET_WIDGET_IS_OPEN';
+export const SET_SHOW_LOADING = 'SET_SHOW_LOADING';

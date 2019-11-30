@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <app-header></app-header>
+    <app-header @back="goBack"></app-header>
 
     <app-body>
 
@@ -44,6 +44,7 @@ import BaseInputMask from '@/components/inputs/BaseInputMask.vue';
 import BaseInputText from '@/components/inputs/BaseInputText.vue';
 import InputModel from '@/models/InputModel';
 import { PHONE_MASK } from '@/config/config';
+import ServiceStateMixin from '@/mixins/ServiceStateMixin';
 
 export default {
   name: 'HomePage',
@@ -56,6 +57,8 @@ export default {
     BaseInputMask,
     BaseInputText,
   },
+
+  mixins: [ServiceStateMixin],
 
   data() {
     return {
@@ -284,6 +287,10 @@ export default {
   methods: {
     goNext() {
       this.$router.push('/success');
+    },
+
+    goBack() {
+      this.closeWidget();
     },
   },
 };

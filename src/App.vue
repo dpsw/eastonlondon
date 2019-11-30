@@ -5,9 +5,10 @@
         <router-view/>
       </div>
     </transition>
+
     <transition name="slide-fade">
       <div class="widget-open" v-if="!widgetIsOpen">
-        <div class="widget-open__link" @click="openWidget">
+        <div class="widget-open__link" @click="clickOpenWidgetButton">
           Book Now!
         </div>
       </div>
@@ -16,18 +17,16 @@
 </template>
 
 <script>
+import ServiceStateMixin from '@/mixins/ServiceStateMixin';
+
 export default {
   name: 'BookingApp',
 
-  data() {
-    return {
-      widgetIsOpen: false,
-    };
-  },
+  mixins: [ServiceStateMixin],
 
   methods: {
-    openWidget() {
-      this.widgetIsOpen = true;
+    clickOpenWidgetButton() {
+      this.openWidget();
     },
   },
 };

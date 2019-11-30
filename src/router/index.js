@@ -15,6 +15,21 @@ const routes = [
     name: 'success',
     component: () => import(/* webpackChunkName: "SuccessPage" */ '../views/SuccessPage.vue'),
   },
+  {
+    path: '/registration',
+    name: 'registration',
+    component: () => import(/* webpackChunkName: "RegistrationPage" */ '../views/RegistrationPage.vue'),
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import(/* webpackChunkName: "LoginPage" */ '../views/LoginPage.vue'),
+  },
+  {
+    path: '/your-bookings',
+    name: 'your-bookings',
+    component: () => import(/* webpackChunkName: "YourBookingsPage" */ '../views/YourBookingsPage.vue'),
+  },
 ];
 
 const router = new VueRouter({

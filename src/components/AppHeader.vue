@@ -1,12 +1,12 @@
 <template>
   <div class="app-header">
-    <div class="app-header__link">
+    <div class="app-header__link" @click="clickBackButton">
       <arrow-back></arrow-back>
     </div>
     <div class="app-header__logo">
       <img src="@/assets/easton-london-logo.png" alt="Easton London">
     </div>
-    <div class="app-header__link">
+    <div class="app-header__link" @click="goToLogin">
       <account-svg></account-svg>
     </div>
   </div>
@@ -26,6 +26,16 @@ export default {
 
   props: {
     msg: String,
+  },
+
+  methods: {
+    clickBackButton() {
+      this.$emit('back');
+    },
+
+    goToLogin() {
+      this.$router.push('/login');
+    },
   },
 };
 </script>
