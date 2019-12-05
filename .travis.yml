@@ -1,0 +1,24 @@
+language: "node_js"
+node_js: "8"
+
+before_script:
+  - npm install
+  - npm run build:gh-pages
+
+script:
+  - echo "Skipping tests"
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  local_dir: dist
+  repo: dpsw/eastonlondon
+  target_branch: gh-pages
+  on:
+    branch: master
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always

@@ -1,4 +1,14 @@
+let publicPath = process.env.DEPLOY_ENV === 'PRODUCTION'
+  ? '/'
+  : '/';
+
+if (process.env.DEPLOY_ENV === 'GH_PAGES') {
+  publicPath = '';
+}
+
 module.exports = {
+  publicPath,
+  assetsDir: '',
   chainWebpack: (config) => {
     const svgRule = config.module.rule('svg');
 
