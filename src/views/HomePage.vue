@@ -10,12 +10,12 @@
 
       <base-input-date-select
               v-model="dateField"
-              :is-less-margin="selectedDate !== 0"
+              :is-less-margin="availableTimes.length > 0"
       ></base-input-date-select>
 
-      <transition name="slide-fade">
+      <transition name="slide">
         <base-input-time-select
-                v-if="selectedDate"
+                v-if="availableTimes.length > 0"
                 v-model="timeField"></base-input-time-select>
       </transition>
 
@@ -27,6 +27,10 @@
        <base-input-mask v-model="phoneField"></base-input-mask>
 
        <base-input-checkbox v-model="agreeWithTermsField"></base-input-checkbox>
+
+        <transition name="slide">
+            <div class="error" v-if="error"> {{ error }} </div>
+        </transition>
 
         <button class="button" @click="goNext">
             BOOK ME NOW!
@@ -45,6 +49,11 @@ import BaseInputText from '@/components/inputs/BaseInputText.vue';
 import InputModel from '@/models/InputModel';
 import { PHONE_MASK } from '@/config/config';
 import ServiceStateMixin from '@/mixins/ServiceStateMixin';
+import CatalogStateMixin from '@/mixins/CatalogStateMixin';
+import UserStateMixin from '@/mixins/UserStateMixin';
+import BookingStateMixin from '@/mixins/BookingStateMixin';
+import BookingModel from '@/models/BookingModel';
+import UserModel from '@/models/UserModel';
 
 export default {
   name: 'HomePage',
@@ -58,108 +67,67 @@ export default {
     BaseInputText,
   },
 
-  mixins: [ServiceStateMixin],
+  mixins: [CatalogStateMixin, ServiceStateMixin, UserStateMixin, BookingStateMixin],
 
   data() {
     return {
-      selectedLocation: 0,
-      selectedServices: 0,
-      selectedMaster: 0,
-      selectedDate: 0,
-      selectedTime: 0,
-      email: '',
-      phone: '',
       agreeWithTerms: true,
 
-      locationList: [
-        {
-          label: 'Moorgate',
-          id: 1,
-        },
-        {
-          label: 'Paddington',
-          id: 2,
-        },
-        {
-          label: 'Waterloo',
-          id: 3,
-        },
-      ],
+      centers: [],
+      services: [],
+      masters: [],
 
-      serviceList: [
-        {
-          label: 'Express Beard Trim - £15',
-          id: 0,
-        },
-        {
-          label: 'Clipper Cut - £20',
-          id: 1,
-        },
-        {
-          label: 'Haircut & Finish - £30',
-          id: 2,
-        },
-        {
-          label: 'Beard Design & Shave - £30',
-          id: 3,
-        },
-        {
-          label: 'Luxury Wet Shave - £30',
-          id: 4,
-        },
-        {
-          label: 'The Full Works - £55',
-          id: 5,
-        },
-      ],
-
-      masterList: [
-        {
-          label: 'Tom',
-          id: 0,
-        },
-        {
-          label: 'Joe',
-          id: 1,
-        },
-      ],
-
-      timeList: [
-        {
-          label: '16:00',
-          id: 0,
-        },
-        {
-          label: '17:35',
-          id: 1,
-        },
-        {
-          label: '18:10',
-          id: 2,
-        },
-      ],
+      availableTimes: [],
 
       dateStart: new Date(),
 
       phoneErrorMessage: '',
       emailErrorMessage: '',
+
+      error: '',
     };
   },
 
   computed: {
+    selectedCenter() {
+      if (!this.booking.center) { return null; }
+      return this.centers.find(c => c.id === this.booking.center.id);
+    },
+
     locationsField: {
       get() {
         const field = new InputModel(
           'At which location?',
-          this.selectedLocation,
+          this.booking.center,
           '',
           'Choose a location',
         );
-        field.setValues(this.locationList);
+        const locations = this.centers.map(c => ({
+          id: c.id,
+          label: c.name,
+        }));
+        field.setValues(locations);
         return field;
       },
-      set(value) {
-        this.selectedLocation = value;
+      async set(value) {
+        this.setShowLoading(true);
+
+        // Detect changing location
+        if (this.booking.center && this.booking.center.id && value) {
+          if (this.booking.center.id !== value.id) {
+            this.booking.service = null;
+            this.booking.master = null;
+            this.booking.date = null;
+            this.booking.time = null;
+            this.availableTimes = [];
+          }
+        }
+
+        this.booking.center = value;
+        await this.fetchMastersForCurrentLocation();
+        await this.fetchServicesForCurrentLocation();
+
+        this.setShowLoading(false);
       },
     },
 
@@ -167,15 +135,19 @@ export default {
       get() {
         const field = new InputModel(
           'What do you need?',
-          this.selectedServices,
+          this.booking.service,
           '',
           'Choose a service',
         );
-        field.setValues(this.serviceList);
+        const services = this.services.map(s => ({
+          id: s.id,
+          label: s.getLabel(),
+        }));
+        field.setValues(services);
         return field;
       },
       set(value) {
-        this.selectedServices = value;
+        this.booking.service = value;
       },
     },
 
@@ -183,15 +155,19 @@ export default {
       get() {
         const field = new InputModel(
           'Want a specific barber?',
-          this.selectedMaster,
+          this.booking.master,
           '',
           'Choose a barber',
         );
-        field.setValues(this.masterList);
+        const masters = this.masters.map(m => ({
+          id: m.id,
+          label: m.name,
+        }));
+        field.setValues(masters);
         return field;
       },
       set(value) {
-        this.selectedMaster = value;
+        this.booking.master = value;
       },
     },
 
@@ -211,14 +187,22 @@ export default {
       get() {
         const field = new InputModel(
           'When are you coming in?',
-          this.selectedDate,
+          this.booking.date,
           '',
         );
         field.setValues(this.availableDates);
         return field;
       },
-      set(value) {
-        this.selectedDate = value;
+      async set(value) {
+        this.booking.date = value;
+        // Reset time selected
+        this.booking.time = '';
+
+        this.setShowLoading(true);
+
+        await this.loadTime();
+
+        this.setShowLoading(false);
       },
     },
 
@@ -226,14 +210,19 @@ export default {
       get() {
         const field = new InputModel(
           '',
-          this.selectedTime,
+          this.booking.time,
           '',
         );
-        field.setValues(this.timeList);
+        const times = this.availableTimes.map(t => ({
+          id: t.id,
+          label: t.getTime(),
+        }));
+
+        field.setValues(times);
         return field;
       },
       set(value) {
-        this.selectedTime = value;
+        this.booking.time = value;
       },
     },
 
@@ -254,15 +243,14 @@ export default {
 
     emailField: {
       get() {
-        const field = new InputModel(
+        return new InputModel(
           'Your email',
-          this.email,
+          this.user.email,
           this.emailErrorMessage,
         );
-        return field;
       },
       set(value) {
-        this.email = value;
+        this.user.email = value;
       },
     },
 
@@ -270,27 +258,115 @@ export default {
       get() {
         const field = new InputModel(
           'Your phone no.',
-          this.phone,
+          this.user.phone,
           this.phoneErrorMessage,
         );
         field.setMask(PHONE_MASK);
         return field;
       },
       set(value) {
-        // this.phoneErrorMessage = value.length === PHONE_MASK.length
-        //   ? '' : `Invalid phone code: ${PHONE_MASK}`;
-        this.phone = value;
+        this.user.phone = value;
       },
     },
   },
 
+  async created() {
+    this.setShowLoading(true);
+
+    const centers = await this.getAllCenters();
+
+    if (this.booking.isReadyForGettingAvailableTimes) {
+      await this.fetchServicesForCurrentLocation();
+      await this.fetchMastersForCurrentLocation();
+      await this.loadTime();
+    }
+
+    this.centers = centers;
+
+    this.setShowLoading(false);
+  },
+
   methods: {
-    goNext() {
-      this.$router.push('/success');
+    async goNext() {
+      if (!this.booking.isReadyForBookingCreating || !this.agreeWithTerms) {
+        this.error = 'Please fill all fields';
+        return;
+      }
+
+      if (!this.user.isValidEmail) {
+        this.error = 'Invalid email address';
+        return;
+      }
+
+      if (!this.user.isValidPhone) {
+        this.error = 'Invalid phone';
+        return;
+      }
+
+      try {
+        // Update state data
+
+        this.setShowLoading(true);
+
+        this.setStateUser(this.user);
+        this.setStateBooking(this.booking);
+
+        await this.saveStateBooking();
+        await this.reserveTime();
+        await this.confirmStateBooking();
+
+        this.setShowLoading(false);
+
+        this.$router.push('/success');
+      } catch (e) {
+        this.error = e.message;
+        this.setShowLoading(false);
+      }
     },
 
     goBack() {
       this.closeWidget();
+    },
+
+    async fetchServicesForCurrentLocation() {
+      this.services = await this.getCenterServices(this.booking.center);
+    },
+
+    async fetchMastersForCurrentLocation() {
+      this.masters = await this.getCenterMasters(this.booking.center);
+    },
+
+    async loadTime() {
+      if (!this.booking.isReadyForGettingAvailableTimes) {
+        this.error = 'Please fill all fields';
+        return;
+      }
+
+      this.error = '';
+
+      if (!this.user.id && this.user.email && this.user.phone) {
+        this.setStateUser(this.user);
+        await this.saveStateUser();
+        this.user = UserModel.cloneUser(this.stateUser);
+      }
+
+      this.setStateBooking(this.booking);
+
+      let times = [];
+      if (!this.user.id) {
+        const fakeBooking = await this.createFakeBooking();
+        times = await this.getTimeForBooking(fakeBooking);
+      } else {
+        await this.saveStateBooking();
+        this.booking = BookingModel.cloneBooking(this.stateBooking);
+        times = await this.getTimeForCurrentBooking();
+      }
+
+      if (times.length === 0) {
+        this.error = 'There is no free time for the selected date';
+      }
+
+      this.availableTimes = times;
     },
   },
 };

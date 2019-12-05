@@ -3,19 +3,31 @@ export default class BookingModel {
    * Booking constructor
    *
    * @param {String} id
-   * @param {String} location
-   * @param {String} service
-   * @param {String} master
+   * @param {CenterModel} center
+   * @param {ServiceModel} service
+   * @param {MasterModel} master
    * @param {Date} date
-   * @param {String} time
+   * @param {TimeModel} time
    */
-  constructor(id = '', location = '', service = '', master = '', date = '', time = '') {
+  constructor(id = '', center = null, service = null, master = null, date = null, time = null) {
     this.id = id;
-    this.location = location;
+    this.center = center;
     this.service = service;
     this.master = master;
     this.date = date;
     this.time = time;
+  }
+
+  get isReadyForGettingAvailableTimes() {
+    return Boolean(this.center && this.center.id
+      && this.service && this.service.id
+      && this.master && this.master.id);
+  }
+
+  get isReadyForBookingCreating() {
+    return Boolean(this.isReadyForGettingAvailableTimes
+      && this.date
+      && this.time);
   }
 
   /**
@@ -32,6 +44,17 @@ export default class BookingModel {
     // Example: 28-Oct-2019 at 12:00
     const dateStr = `${day}-${month}-${year} at ${this.time}`;
 
-    return `${this.service} with ${this.master} @ Easton London ${this.location} ${dateStr}`;
+    return `${this.service} with ${this.master} @ Easton London ${this.center.label} ${dateStr}`;
+  }
+
+  /**
+   * Clone booking object
+   * @param {BookingModel|Object} booking
+   * @returns {BookingModel}
+   */
+  static cloneBooking(booking) {
+    const clone = Object.assign({}, booking);
+    Object.setPrototypeOf(clone, BookingModel.prototype);
+    return clone;
   }
 }

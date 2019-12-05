@@ -6,3 +6,5 @@ export const {
 } = process.env;
 
 export const PHONE_MASK = '0#### ######';
+
+export const AVAILABLE_MINUTES = ['00', '30'];

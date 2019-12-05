@@ -8,6 +8,12 @@
   font-family: 'Oxygen', sans-serif;
 }
 
+@mixin only-small-mobile {
+  @media (max-width: (354px)) {
+    @content;
+  }
+}
+
 @mixin only-mobile {
   @media (max-width: (599px)) {
     @content;

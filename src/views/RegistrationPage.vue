@@ -51,12 +51,11 @@ export default {
   computed: {
     emailField: {
       get() {
-        const field = new InputModel(
+        return new InputModel(
           'Email',
           this.email,
           this.emailErrorMessage,
         );
-        return field;
       },
       set(value) {
         this.email = value;
@@ -65,12 +64,11 @@ export default {
 
     passwordField: {
       get() {
-        const field = new InputModel(
+        return new InputModel(
           'Password',
           this.password,
           this.passwordErrorMessage,
         );
-        return field;
       },
       set(value) {
         this.password = value;
@@ -80,7 +78,7 @@ export default {
 
   methods: {
     goNext() {
-      this.$router.push('/current-booking');
+      this.$router.push('/your-bookings');
     },
 
     goBack() {
