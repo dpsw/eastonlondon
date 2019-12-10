@@ -1,60 +1,18 @@
-export const API_URL = 'https://api.zenoti.com/';
+export const API_URL = 'http://localhost:8099/';
 
-export const GENERATE_TOKEN = 'Token';
+export const LIST_ALL_CENTERS = 'api/zenoti/centers';
+export const LIST_MASTERS = 'api/zenoti/masters';
+export const LIST_SERVICES = 'api/zenoti/services';
 
-// CENTERS
-export const LIST_ALL_CENTERS = 'v1/Centers';
-/**
- * Get URI for fetching masters
- *
- * @param {String} centerId
- * @return {String}
- */
-export const LIST_MASTERS = centerId => `v1/Centers/${centerId}/therapists`;
+export const CREATE_GUEST = 'api/zenoti/guest/store';
 
-/**
- * Get URI for fetching services
- *
- * @param {String} centerId
- * @return {String}
- */
-export const LIST_SERVICES = centerId => `v1/Centers/${centerId}/services`;
+export const CREATE_BOOKING = 'api/zenoti/booking/store';
+export const CONFIRM_BOOKING = 'api/zenoti/booking/confirm';
+export const CANCEL_BOOKING = 'api/zenoti/booking/cancel';
+export const GET_BOOKINGS = 'api/zenoti/bookings';
 
-// GUESTS
-export const CREATE_GUEST = 'v1/guests';
+export const GET_TIME_FOR_BOOKING = 'api/zenoti/times';
+export const RESERVE_TIME_FOR_BOOKING = 'api/zenoti/time/reserve';
 
-// BOOKINGS
-export const CREATE_BOOKING = 'v1/bookings';
-
-/**
- * Get URI for confirm booking
- *
- * @param {String} bookingId
- * @return {String}
- */
-export const CONFIRM_BOOKING = bookingId => `/v1/bookings/${bookingId}/slots/confirm`;
-
-/**
- * Get URI for cancel booking
- *
- * @param {String} invoiceId
- * @return {String}
- */
-export const CANCEL_BOOKING = invoiceId => `/v1/invoices/${invoiceId}/cancel`;
-
-// TIMES
-/**
- * Get URI for fetching times
- *
- * @param {String} bookingId
- * @return {String}
- */
-export const GET_TIME_FOR_BOOKING = bookingId => `/v1/bookings/${bookingId}/slots`;
-
-/**
- * Get URI for fetching times
- *
- * @param {String} bookingId
- * @return {String}
- */
-export const RESERVE_TIME_FOR_BOOKING = bookingId => `/v1/bookings/${bookingId}/slots/reserve`;
+export const LOGIN = 'api/user/signIn';
+export const REGISTRATION = 'api/user/signUp';

@@ -1,25 +1,25 @@
 import axios from 'axios';
 import * as URLS from '@/config/urls';
 
-export const getAllCenters = (data) => {
+export const getAllCenters = () => {
   const queryUrl = `${URLS.API_URL}${URLS.LIST_ALL_CENTERS}`;
-  return axios.get(queryUrl, {
-    headers: { Authorization: `bearer ${data.token}` },
-  });
+  return axios.get(queryUrl);
 };
 
 export const getCenterMasters = (data) => {
-  const apiUri = URLS.LIST_MASTERS(data.centerId);
-  const queryUrl = `${URLS.API_URL}${apiUri}`;
+  const queryUrl = `${URLS.API_URL}${URLS.LIST_MASTERS}`;
   return axios.get(queryUrl, {
-    headers: { Authorization: `bearer ${data.token}` },
+    params: {
+      center_id: data.centerId,
+    },
   });
 };
 
 export const getCenterServices = (data) => {
-  const apiUri = URLS.LIST_SERVICES(data.centerId);
-  const queryUrl = `${URLS.API_URL}${apiUri}`;
+  const queryUrl = `${URLS.API_URL}${URLS.LIST_SERVICES}`;
   return axios.get(queryUrl, {
-    headers: { Authorization: `bearer ${data.token}` },
+    params: {
+      center_id: data.centerId,
+    },
   });
 };

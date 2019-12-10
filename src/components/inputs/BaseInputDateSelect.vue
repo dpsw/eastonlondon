@@ -16,25 +16,16 @@
                     {{ formatDate(date) }}
                 </div>
             </div>
-
-            <base-error
-                    v-if="value.errorMessage.length > 0"
-                    :error="value.errorMessage"
-            ></base-error>
         </div>
     </div>
 </template>
 
 <script>
-import BaseError from './BaseError.vue';
 import InputModel from '@/models/InputModel';
 
 export default {
   name: 'BaseInputDateSelect',
 
-  components: {
-    BaseError,
-  },
 
   props: {
     value: {
@@ -48,6 +39,10 @@ export default {
   computed: {
     dates() {
       return this.value.values;
+    },
+
+    hasError() {
+      return this.value.errorMessage.length > 0;
     },
   },
 

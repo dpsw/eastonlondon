@@ -7,21 +7,9 @@ export const save = (data) => {
 
   const requestData = {
     center_id: data.booking.center.id,
-    personal_info: {
-      first_name: 'Online',
-      last_name: 'Booking',
-      email: data.user.email,
-      mobile_phone: {
-        country_code: 44,
-        number: data.user.phone,
-      },
-    },
+    email: data.user.email,
+    phone: data.user.phone,
   };
 
-  return axios.post(queryUrl, requestData, {
-    headers: {
-      Authorization: `bearer ${data.token}`,
-      'Content-Type': 'application/json',
-    },
-  });
+  return axios.post(queryUrl, requestData);
 };

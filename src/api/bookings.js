@@ -12,46 +12,40 @@ export const save = (data) => {
   const requestData = {
     center_id: data.booking.center.id,
     date: dateForApi,
-    is_only_catalog_employees: 'false',
-    guests: [
-      {
-        id: data.user.id,
-        items: [
-          {
-            item: {
-              id: data.booking.service.id,
-            },
-            therapist: {
-              id: data.booking.master.id,
-            },
-          },
-        ],
-      },
-    ],
+    guest_id: data.user.id,
   };
+  if (data.booking.master && data.booking.master.id) {
+    requestData.master_id = data.booking.master.id;
+  }
+  requestData.services = data.booking.service.map(s => ({ id: s.id }));
 
-  return axios.post(queryUrl, requestData, {
-    headers: { Authorization: `bearer ${data.token}` },
-  });
+  return axios.post(queryUrl, requestData);
 };
 
 export const confirm = (data) => {
-  const apiUri = URLS.CONFIRM_BOOKING(data.booking.id);
-  const queryUrl = `${URLS.API_URL}${apiUri}`;
+  const queryUrl = `${URLS.API_URL}${URLS.CONFIRM_BOOKING}`;
 
   const requestData = {
-    notes: 'Online booking',
+    booking_id: data.booking.id,
   };
 
-  return axios.post(queryUrl, requestData, {
-    headers: { Authorization: `bearer ${data.token}` },
-  });
+  return axios.post(queryUrl, requestData);
 };
 
 export const cancel = (data) => {
-  const apiUri = URLS.CANCEL_BOOKING(data.invoiceId);
-  const queryUrl = `${URLS.API_URL}${apiUri}`;
-  return axios.put(queryUrl, {
-    headers: { Authorization: `bearer ${data.token}` },
-  });
+  const queryUrl = `${URLS.API_URL}${URLS.CANCEL_BOOKING}`;
+  const requestData = {
+    invoice_id: data.invoiceId,
+  };
+  return axios.post(queryUrl, requestData);
+};
+
+export const getBookings = (data) => {
+  const queryUrl = `${URLS.API_URL}${URLS.GET_BOOKINGS}`;
+
+  const requestData = {
+    email: data.user.email,
+  };
+
+  return axios.get(queryUrl, { params: requestData });
 };

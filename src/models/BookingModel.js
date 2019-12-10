@@ -20,8 +20,7 @@ export default class BookingModel {
 
   get isReadyForGettingAvailableTimes() {
     return Boolean(this.center && this.center.id
-      && this.service && this.service.id
-      && this.master && this.master.id);
+      && this.service && this.service.length > 0);
   }
 
   get isReadyForBookingCreating() {

@@ -5,7 +5,7 @@
     <app-body>
 
       <base-input-select v-model="locationsField"></base-input-select>
-      <base-input-select v-model="servicesField"></base-input-select>
+      <base-input-multiple-select v-model="servicesField"></base-input-multiple-select>
       <base-input-select v-model="masterField"></base-input-select>
 
       <base-input-date-select
@@ -41,6 +41,7 @@
 
 <script>
 import BaseInputSelect from '@/components/inputs/BaseInputSelect.vue';
+import BaseInputMultipleSelect from '@/components/inputs/BaseInputMultipleSelect.vue';
 import BaseInputDateSelect from '@/components/inputs/BaseInputDateSelect.vue';
 import BaseInputTimeSelect from '@/components/inputs/BaseInputTimeSelect.vue';
 import BaseInputCheckbox from '@/components/inputs/BaseInputCheckbox.vue';
@@ -65,6 +66,7 @@ export default {
     BaseInputCheckbox,
     BaseInputMask,
     BaseInputText,
+    BaseInputMultipleSelect,
   },
 
   mixins: [CatalogStateMixin, ServiceStateMixin, UserStateMixin, BookingStateMixin],
@@ -72,6 +74,7 @@ export default {
   data() {
     return {
       agreeWithTerms: true,
+      agreeWithTermsErrorMessage: true,
 
       centers: [],
       services: [],
@@ -81,6 +84,8 @@ export default {
 
       dateStart: new Date(),
 
+      centerErrorMessage: '',
+      servicesErrorMessage: '',
       phoneErrorMessage: '',
       emailErrorMessage: '',
 
@@ -99,7 +104,7 @@ export default {
         const field = new InputModel(
           'At which location?',
           this.booking.center,
-          '',
+          this.centerErrorMessage,
           'Choose a location',
         );
         const locations = this.centers.map(c => ({
@@ -136,7 +141,7 @@ export default {
         const field = new InputModel(
           'What do you need?',
           this.booking.service,
-          '',
+          this.servicesErrorMessage,
           'Choose a service',
         );
         const services = this.services.map(s => ({
@@ -231,7 +236,7 @@ export default {
         const field = new InputModel(
           '',
           this.agreeWithTerms,
-          '',
+          this.agreeWithTermsErrorMessage,
         );
         field.setValues([{ id: 1, label: 'I agree to the Terms & Conditions' }]);
         return field;
@@ -288,18 +293,17 @@ export default {
 
   methods: {
     async goNext() {
+      this.emailErrorMessage = this.user.isValidEmail ? '' : 'Invalid email address';
+      this.phoneErrorMessage = this.user.isValidPhone ? '' : 'Invalid phone';
+      this.agreeWithTermsErrorMessage = this.agreeWithTerms ? '' : 'Required field';
+      this.centerErrorMessage = this.booking.center && this.booking.center.id ? '' : 'Required field';
+      this.servicesErrorMessage = this.booking.service && this.booking.service.length > 0 ? '' : 'Required field';
+
       if (!this.booking.isReadyForBookingCreating || !this.agreeWithTerms) {
-        this.error = 'Please fill all fields';
-        return;
-      }
-
-      if (!this.user.isValidEmail) {
-        this.error = 'Invalid email address';
-        return;
-      }
-
-      if (!this.user.isValidPhone) {
-        this.error = 'Invalid phone';
+        this.error = 'Please fill out all required fields!';
+        if (!this.booking.date || !this.booking.time) {
+          this.error = 'Please select date and time';
+        }
         return;
       }
 

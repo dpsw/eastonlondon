@@ -13,7 +13,8 @@
                    :value="v.id"
                    :id="generateId(v.id)"
                 >
-                <span class="radio__label">
+                <span class="radio__label"
+                      :class="{'radio__label_error': hasError}">
                     {{ v.label }}
                 </span>
 
@@ -43,6 +44,10 @@ export default {
   computed: {
     propValue() {
       return this.value.value;
+    },
+
+    hasError() {
+      return this.value.errorMessage.length > 0;
     },
   },
 

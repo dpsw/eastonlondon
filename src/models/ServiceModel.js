@@ -17,7 +17,7 @@ export default class ServiceModel {
   }
 
   getLabel() {
-    return `${this.name} - £${this.price}`;
+    return `${this.name} (${this.duration}mins) - £${this.price}`;
   }
 
   static makeServiceFromServerObject(serverObject) {

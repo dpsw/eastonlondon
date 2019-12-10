@@ -21,6 +21,8 @@ export default {
     ...mapActions({
       setStateUser: 'user/setUser',
       saveStateUser: 'user/saveUser',
+      login: 'user/login',
+      registration: 'user/registration',
     }),
   },
 };

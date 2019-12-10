@@ -8,27 +8,22 @@
                     :placeholder="placeholder"
                     :options="options"
                     :value="valueData"
+                    :class="{'v-select_error': hasError}"
                     @input="setSelected"
             ></v-select>
 
-            <base-error
-                    v-if="value.errorMessage.length > 0"
-                    :error="value.errorMessage"
-            ></base-error>
         </div>
     </div>
 </template>
 
 <script>
 import vSelect from 'vue-select';
-import BaseError from './BaseError.vue';
 import InputModel from '@/models/InputModel';
 
 export default {
   name: 'BaseInputSelect',
 
   components: {
-    BaseError,
     vSelect,
   },
 
@@ -47,6 +42,9 @@ export default {
     },
     valueData() {
       return 'value' in this.value ? this.value.value : '';
+    },
+    hasError() {
+      return this.value.errorMessage.length > 0;
     },
   },
 

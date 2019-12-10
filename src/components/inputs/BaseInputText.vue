@@ -4,6 +4,7 @@
             <input
                     :type="localInputType"
                     class="input__field"
+                    :class="{'input__field_error': hasError}"
                     maxlength="75"
                     :value="value.value"
                     :placeholder="value.placeholder"
@@ -18,17 +19,11 @@
                     v-if="showPasswordSvg">
                 </show-password>
             </div>
-
-            <base-error
-                    v-if="value.errorMessage.length > 0"
-                    :error="value.errorMessage"
-            ></base-error>
         </div>
     </div>
 </template>
 
 <script>
-import BaseError from './BaseError.vue';
 import InputModel from '@/models/InputModel';
 import ShowPassword from '@/assets/show-password.svg';
 
@@ -36,7 +31,6 @@ export default {
   name: 'BaseInputText',
 
   components: {
-    BaseError,
     ShowPassword,
   },
 
@@ -67,6 +61,10 @@ export default {
     },
     isColoredSvg() {
       return this.inputType === 'password' && this.localInputType === 'text';
+    },
+
+    hasError() {
+      return this.value.errorMessage.length > 0;
     },
   },
 

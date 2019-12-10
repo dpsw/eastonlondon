@@ -2,26 +2,22 @@ import axios from 'axios';
 import * as URLS from '@/config/urls';
 
 export const getAvailableTime = (data) => {
-  const apiUri = URLS.GET_TIME_FOR_BOOKING(data.booking.id);
-  const queryUrl = `${URLS.API_URL}${apiUri}`;
+  const queryUrl = `${URLS.API_URL}${URLS.GET_TIME_FOR_BOOKING}`;
 
   return axios.get(queryUrl, {
-    headers: { Authorization: `bearer ${data.token}` },
+    params: {
+      booking_id: data.booking.id,
+    },
   });
 };
 
 export const reserveTime = (data) => {
-  const apiUri = URLS.RESERVE_TIME_FOR_BOOKING(data.booking.id);
-  const queryUrl = `${URLS.API_URL}${apiUri}`;
+  const queryUrl = `${URLS.API_URL}${URLS.RESERVE_TIME_FOR_BOOKING}`;
 
   const requestData = {
-    slot_time: data.booking.time.id,
+    booking_id: data.booking.id,
+    time_id: data.booking.time.id,
   };
 
-  return axios.post(queryUrl, requestData, {
-    headers: {
-      Authorization: `bearer ${data.token}`,
-      'Content-Type': 'application/json',
-    },
-  });
+  return axios.post(queryUrl, requestData);
 };

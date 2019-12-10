@@ -10,5 +10,3 @@ export const chunk = (array, size) => {
   }
   return chunkedArr;
 };
-
-export const arrayCopy = array => [...array];

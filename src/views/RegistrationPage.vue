@@ -21,6 +21,10 @@
         >
         </base-input-text>
 
+        <transition name="slide">
+            <div class="error" v-if="error"> {{ error }} </div>
+        </transition>
+
         <button class="button" @click="goNext">
             REGISTER
         </button>
@@ -31,6 +35,8 @@
 <script>
 import BaseInputText from '@/components/inputs/BaseInputText.vue';
 import InputModel from '@/models/InputModel';
+import UserStateMixin from '@/mixins/UserStateMixin';
+import ServiceStateMixin from '@/mixins/ServiceStateMixin';
 
 export default {
   name: 'RegistrationPage',
@@ -39,12 +45,14 @@ export default {
     BaseInputText,
   },
 
+  mixins: [ServiceStateMixin, UserStateMixin],
+
   data() {
     return {
-      email: '',
       password: '',
       emailErrorMessage: '',
       passwordErrorMessage: '',
+      error: '',
     };
   },
 
@@ -53,12 +61,12 @@ export default {
       get() {
         return new InputModel(
           'Email',
-          this.email,
+          this.user.email,
           this.emailErrorMessage,
         );
       },
       set(value) {
-        this.email = value;
+        this.user.email = value;
       },
     },
 
@@ -76,9 +84,37 @@ export default {
     },
   },
 
-  methods: {
-    goNext() {
+  created() {
+    if (this.user.isLoggedIn) {
       this.$router.push('/your-bookings');
+    }
+  },
+
+  methods: {
+    async goNext() {
+      this.emailErrorMessage = this.user.isValidEmail ? '' : 'Invalid email address';
+      this.passwordErrorMessage = this.password.length >= 6 ? '' : 'Invalid password. Minimum length 6 symbols';
+
+      if (this.emailErrorMessage) {
+        this.error = 'Invalid email address';
+        return;
+      }
+      if (this.passwordErrorMessage) {
+        this.error = 'Invalid password. Minimum length 6 symbols';
+        return;
+      }
+
+      this.setShowLoading(true);
+
+      this.setStateUser(this.user);
+      try {
+        await this.registration(this.password);
+        this.$router.push('/your-bookings');
+      } catch (e) {
+        console.log(e.message);
+        this.error = e.message;
+      }
+      this.setShowLoading(false);
     },
 
     goBack() {

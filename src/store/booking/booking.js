@@ -6,6 +6,7 @@ import UserModel from '@/models/UserModel';
 import * as bookingMutations from './mutations';
 import * as timesApi from '@/api/times';
 import * as guestsApi from '@/api/guests';
+import ServiceModel from '@/models/ServiceModel';
 
 const serviceState = {
   booking: new BookingModel(),
@@ -26,7 +27,6 @@ const actions = {
     }
 
     const response = await bookingsApi.save({
-      token: rootState.service.token,
       booking: state.booking,
       user: rootState.user.user,
     });
@@ -42,12 +42,11 @@ const actions = {
   },
 
   async reserveTime({
-    state, rootState,
+    state,
   }) {
     Logger.debug('reserveTime', true);
 
     const response = await timesApi.reserveTime({
-      token: rootState.service.token,
       booking: state.booking,
     });
 
@@ -58,12 +57,11 @@ const actions = {
   },
 
   async confirmBooking({
-    state, rootState,
+    state,
   }) {
     Logger.debug('confirmBooking', true);
 
     const response = await bookingsApi.confirm({
-      token: rootState.service.token,
       booking: state.booking,
     });
 
@@ -73,7 +71,7 @@ const actions = {
     }
   },
 
-  async createFakeBooking({ state, rootState }) {
+  async createFakeBooking({ state }) {
     Logger.debug('createFakeBooking', true);
 
     const user = new UserModel();
@@ -81,7 +79,6 @@ const actions = {
     user.phone = '7777788888';
 
     const responseCreatingFakeUser = await guestsApi.save({
-      token: rootState.service.token,
       booking: state.booking,
       user,
     });
@@ -93,7 +90,6 @@ const actions = {
     user.id = dataCreatingFakeUser.id;
 
     const response = await bookingsApi.save({
-      token: rootState.service.token,
       booking: state.booking,
       user,
     });
@@ -106,6 +102,21 @@ const actions = {
     booking.id = data.id;
     return booking;
   },
+
+
+  async getBookings({ rootState }) {
+    Logger.debug('getBookings', true);
+    const response = await bookingsApi.getBookings({
+      user: rootState.user.user,
+    });
+    const { data } = response;
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+    if (!('services' in data)) return [];
+    return data.services.map(s => ServiceModel.makeServiceFromServerObject(s));
+  },
+
 };
 
 const getters = {};

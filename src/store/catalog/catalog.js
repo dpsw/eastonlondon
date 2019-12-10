@@ -11,11 +11,9 @@ const serviceState = {
 };
 
 const actions = {
-  async getAllCenters({ rootState }) {
+  async getAllCenters() {
     Logger.debug('getAllCenters', true);
-    const response = await centersApi.getAllCenters({
-      token: rootState.service.token,
-    });
+    const response = await centersApi.getAllCenters();
     const { data } = response;
     if (data.error) {
       throw new Error(data.error.message);
@@ -24,24 +22,22 @@ const actions = {
     return data.centers.map(c => CenterModel.makeCenterFromServerObject(c));
   },
 
-  async getCenterMasters({ rootState }, center) {
+  async getCenterMasters(store, center) {
     Logger.debug('getCenterMasters', true);
     const response = await centersApi.getCenterMasters({
-      token: rootState.service.token,
       centerId: center.id,
     });
     const { data } = response;
     if (data.error) {
       throw new Error(data.error.message);
     }
-    if (!('therapists' in data)) return [];
-    return data.therapists.map(m => MasterModel.makeMasterFromServerObject(m));
+    if (!('masters' in data)) return [];
+    return data.masters.map(m => MasterModel.makeMasterFromServerObject(m));
   },
 
-  async getCenterServices({ rootState }, center) {
+  async getCenterServices(store, center) {
     Logger.debug('getCenterServices', true);
     const response = await centersApi.getCenterServices({
-      token: rootState.service.token,
       centerId: center.id,
     });
     const { data } = response;
@@ -60,11 +56,10 @@ const actions = {
     return slots;
   },
 
-  async getTimeForBooking({ rootState }, booking) {
+  async getTimeForBooking(state, booking) {
     Logger.debug('getTimeForDate', true);
 
     const response = await timesApi.getAvailableTime({
-      token: rootState.service.token,
       booking,
     });
     const { data } = response;

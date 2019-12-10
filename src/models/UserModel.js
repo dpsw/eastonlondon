@@ -7,11 +7,13 @@ export default class UserModel {
    * @param {String} id
    * @param {String} email
    * @param {String} phone
+   * @param {Boolean} isLoggedIn
    */
-  constructor(id = '', email = '', phone = '') {
+  constructor(id = '', email = '', phone = '', isLoggedIn = false) {
     this.id = id;
     this.email = email;
     this.phone = phone;
+    this.isLoggedIn = isLoggedIn;
   }
 
   get isReadyForSaving() {

@@ -1,0 +1,32 @@
+{
+  "name": "eastonlondonbackend",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./app.js",
+    "tunnel": "ngrok http 8080"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "bcrypt": "^3.0.7",
+    "body-parser": "^1.19.0",
+    "chalk": "^2.4.2",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^6.2.0",
+    "errorhandler": "^1.5.1",
+    "express": "~4.16.0",
+    "express-flash": "0.0.2",
+    "express-validator": "^5.3.1",
+    "http-errors": "~1.6.2",
+    "morgan": "~1.9.0",
+    "mysql2": "^2.0.2",
+    "nodejs-assistant": "^0.7.1",
+    "querystring": "^0.2.0",
+    "structjson": "^1.0.1"
+  },
+  "devDependencies": {
+    "ngrok": "^3.2.5"
+  }
+}
