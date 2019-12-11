@@ -242,6 +242,9 @@ body {
       color: $black;
       background-color: $primary-color;
     }
+    &_hidden {
+      visibility: hidden;
+    }
   }
 }
 

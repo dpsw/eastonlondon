@@ -15,6 +15,7 @@ export default class TimeModel {
    * @returns {String}
    */
   getTime() {
+    if (!this.id) return '';
     const time = this.id.split('T')[1];
     const [hours, minutes] = time.split(':');
     return `${hours}:${minutes}`;

@@ -184,7 +184,6 @@ export default {
         return field;
       },
       async set(value) {
-        debugger;
         this.booking.date = value;
         // Reset time selected
         this.booking.time = '';

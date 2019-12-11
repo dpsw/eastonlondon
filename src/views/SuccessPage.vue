@@ -12,7 +12,9 @@
             A confirmation email with the booking details was sent to your inbox.
         </div>
 
-        <div class="title title_link" @click="reschedule">
+        <div class="title"
+             :class="{'title_link': user.isLoggedIn}"
+             @click="reschedule">
             EASILY RESCHEDULE A BOOKING!
         </div>
 

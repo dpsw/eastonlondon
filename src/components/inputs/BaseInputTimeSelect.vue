@@ -16,6 +16,11 @@
                 >
                     {{ formatTime(time) }}
                 </div>
+                <!-- eslint-disable-next-line -->
+                <div v-if="index === (timesByFourElements.length - 1)"
+                     v-for="n in countHiddenBlocks"
+                     :key="`hidden-time-${n}`"
+                     class="input__time-item input__time-item_hidden"> 11:30 </div>
             </div>
 
             <base-error
@@ -54,6 +59,15 @@ export default {
   computed: {
     timesByFourElements() {
       return chunk(this.value.values, this.countTimesInOneRow);
+    },
+    countHiddenBlocks() {
+      if (this.timesByFourElements.length === 0) {
+        return 0;
+      }
+      const countElementsInLastChunk = this.timesByFourElements[
+        this.timesByFourElements.length - 1
+      ].length;
+      return this.countTimesInOneRow - countElementsInLastChunk;
     },
   },
 
