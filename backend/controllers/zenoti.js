@@ -1,6 +1,7 @@
 const axios = require('axios');
 const qs = require('querystring');
 const urls = require('../config/urls');
+const db = require('./db');
 
 const {
   ZENOTI_API_URL,
@@ -159,23 +160,38 @@ exports.saveBooking = async (req, res) => {
 };
 
 
-exports.confirmBooking = async (req, res) => {
+exports.rescheduleBooking = async (req, res) => {
   const requestData = {
-    notes: 'Online booking',
-  };
-
-  const url = urls.CONFIRM_BOOKING(req.body.booking_id);
-  ZenotiAPIinstance.post(url, requestData)
-    .then(
-      (data) => {
-        if (data.data.error) {
-          console.log('Confirm Zenoti booking error: ', data.data.error);
-          return res.status(500).json({ error: { message: 'Internal server error.' } });
-        }
-        return res.status(201).json({
-          id: data.data && data.data.id ? data.data.id : 0,
-        });
+    center_id: req.body.center_id,
+    date: req.body.date,
+    is_only_catalog_employees: 'false',
+    guests: [
+      {
+        id: req.body.guest_id,
+        invoice_id: req.body.invoice_id,
+        items: [],
       },
+    ],
+  };
+  requestData.guests[0].items = req.body.services.map((s) => {
+    const service = {
+      item: {
+        id: s.id,
+      },
+      invoice_item_id: s.invoice_item_id,
+    };
+    if (req.body.master_id) {
+      service.therapist = {
+        id: req.body.master_id,
+      };
+    }
+    return service;
+  });
+  ZenotiAPIinstance.post(urls.CREATE_BOOKING, requestData)
+    .then(
+      data => res.status(201).json({
+        success: true,
+      }),
     )
     .catch((error) => {
       console.log('Create Zenoti booking error: ', error);
@@ -184,18 +200,42 @@ exports.confirmBooking = async (req, res) => {
 };
 
 
+exports.confirmBooking = async (req, res) => {
+  const requestData = {
+    notes: 'Online booking',
+  };
+
+  const url = urls.CONFIRM_BOOKING(req.body.booking_id);
+
+  try {
+    const { data } = await ZenotiAPIinstance.post(url, requestData);
+    if (data.error) {
+      console.log('Confirm Zenoti booking error: ', data.error);
+      return res.status(500).json({ error: { message: 'Internal server error.' } });
+    }
+    await db.addGuest(req.body.email, req.body.guest_id, req.body.phone, req.body.time);
+    return res.status(201).json({
+      id: data.data && data.data.id ? data.data.id : 0,
+    });
+  } catch (error) {
+    console.log('Create Zenoti booking error: ', error);
+    return res.status(500).json({ error: { message: 'Internal server error.' } });
+  }
+};
+
+
 exports.cancelBooking = async (req, res) => {
   const url = urls.CANCEL_BOOKING(req.body.invoice_id);
-  ZenotiAPIinstance.put(url)
+  ZenotiAPIinstance.put(url, {
+    comments: 'Cancel by user',
+  })
     .then(
       (data) => {
         if (data.data.error) {
           console.log('Confirm Zenoti booking error: ', data.data.error);
           return res.status(500).json({ error: { message: 'Internal server error.' } });
         }
-        return res.status(201).json({
-          id: data.data && data.data.id ? data.data.id : 0,
-        });
+        return res.status(201).json({ success: true });
       },
     )
     .catch((error) => {
@@ -244,36 +284,54 @@ exports.reserveTime = async (req, res) => {
 };
 
 exports.getBookingsByEmail = async (req, res) => {
-  const requestData = {
-    email: req.query.email,
-  };
+  // const requestData = {
+  //   email: req.query.email,
+  // };
 
   try {
-    const { data } = await ZenotiAPIinstance.get(urls.GET_GUESTS_BY_EMAIL, { params: requestData });
-    if (!data.guests || data.guests.length === 0) {
+    // const { data }
+    // = await ZenotiAPIinstance.get(urls.GET_GUESTS_BY_EMAIL, { params: requestData });
+    //
+    // if (!data.guests || data.guests.length === 0) {
+    //   return res.status(201).json({ bookings: [] });
+    // }
+    const guests = await db.getGuestsByEmail(req.query.email);
+    if (!guests.length) {
       return res.status(201).json({ bookings: [] });
     }
-    const guestIds = data.guests.map(g => g.id);
+
+    const guestIds = guests.map(g => g.guestId);
+    const { phone } = guests[0];
     let bookings = [];
 
+    const today = new Date();
     for (const guestId of guestIds) {
       const responseBookings = await ZenotiAPIinstance.get(urls.GET_BOOKINGS_BY_GUEST_ID(guestId));
       const dataBookings = responseBookings.data;
       if (!dataBookings.appointments || dataBookings.appointments.length === 0) {
         continue;
       }
-      const booking = dataBookings.appointments.map(b => ({
-        center_id: b.center_id,
-        invoice_id: b.invoice_id,
-        price: b.price.final,
-        guest_id: guestId,
-        services: b.appointment_services.map(s => ({
-          invoice_item_id: s.invoice_item_id,
-          service_id: s.service.id,
-          start_time: s.start_time,
-          therapist_id: s.requested_therapist_id,
-        })),
-      }));
+      const appointments = dataBookings.appointments.filter((appointment) => {
+        const bookingDate = new Date(appointment.appointment_services[0].start_time);
+        return bookingDate > today;
+      });
+      const booking = appointments
+        .filter(b => !bookings.find(
+          alreadyExistsBookings => alreadyExistsBookings.invoice_id === b.invoice_id,
+        ))
+        .map(b => ({
+          center_id: b.center_id,
+          invoice_id: b.invoice_id,
+          price: b.price.final,
+          guest_id: guestId,
+          phone,
+          services: b.appointment_services.map(s => ({
+            invoice_item_id: s.invoice_item_id,
+            service_id: s.service.id,
+            start_time: s.start_time,
+            therapist_id: s.requested_therapist_id,
+          })),
+        }));
       bookings = bookings.concat(booking);
     }
 

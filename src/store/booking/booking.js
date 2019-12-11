@@ -6,7 +6,6 @@ import UserModel from '@/models/UserModel';
 import * as bookingMutations from './mutations';
 import * as timesApi from '@/api/times';
 import * as guestsApi from '@/api/guests';
-import ServiceModel from '@/models/ServiceModel';
 
 const serviceState = {
   booking: new BookingModel(),
@@ -41,6 +40,27 @@ const actions = {
     return booking;
   },
 
+  async rescheduleBooking({
+    dispatch, state,
+  }) {
+    Logger.debug('rescheduleBooking', true);
+
+    await dispatch('cancelBooking', state.booking);
+    await dispatch('saveBooking');
+    await dispatch('reserveTime');
+    await dispatch('confirmBooking');
+
+    // const response = await bookingsApi.reschedule({
+    //   booking: state.booking,
+    //   user: rootState.user.user,
+    // });
+    //
+    // const { data } = response;
+    // if (data.error) {
+    //   throw new Error(data.error.message);
+    // }
+  },
+
   async reserveTime({
     state,
   }) {
@@ -56,13 +76,25 @@ const actions = {
     }
   },
 
-  async confirmBooking({
-    state,
-  }) {
+  async confirmBooking({ state, rootState }) {
     Logger.debug('confirmBooking', true);
 
     const response = await bookingsApi.confirm({
       booking: state.booking,
+      user: rootState.user.user,
+    });
+
+    const { data } = response;
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+  },
+
+  async cancelBooking(state, booking) {
+    Logger.debug('cancelBooking', true);
+
+    const response = await bookingsApi.cancel({
+      booking,
     });
 
     const { data } = response;
@@ -103,7 +135,6 @@ const actions = {
     return booking;
   },
 
-
   async getBookings({ rootState }) {
     Logger.debug('getBookings', true);
     const response = await bookingsApi.getBookings({
@@ -113,10 +144,13 @@ const actions = {
     if (data.error) {
       throw new Error(data.error.message);
     }
-    if (!('services' in data)) return [];
-    return data.services.map(s => ServiceModel.makeServiceFromServerObject(s));
+    if (!('bookings' in data)) return [];
+    return data.bookings;
   },
 
+  clearBooking({ commit }) {
+    commit(bookingMutations.SET_BOOKING, new BookingModel());
+  },
 };
 
 const getters = {};

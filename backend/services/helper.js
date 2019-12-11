@@ -23,6 +23,13 @@ exports.getUserFromDBEntity = userEntity => ({
   email: userEntity.email,
 });
 
+exports.getGuestFromDBEntity = guestEntity => ({
+  email: guestEntity.email,
+  phone: guestEntity.phone,
+  guestId: guestEntity.guest_id,
+  date: guestEntity.date,
+});
+
 exports.generateError = (errorCode) => {
   let error = null;
 

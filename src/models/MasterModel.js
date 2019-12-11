@@ -8,7 +8,7 @@ export default class MasterModel {
    */
   constructor(id = '', name = '', nickname = '') {
     this.id = id;
-    this.name = name;
+    this.label = name;
     this.nickname = nickname;
   }
 
@@ -17,7 +17,7 @@ export default class MasterModel {
 
     const personalInfo = serverObject.personal_info;
     master.id = serverObject.id;
-    master.name = `${personalInfo.first_name} ${personalInfo.last_name}`;
+    master.label = `${personalInfo.first_name} ${personalInfo.last_name}`;
     master.nickname = personalInfo.nick_name;
 
     return master;

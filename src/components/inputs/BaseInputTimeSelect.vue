@@ -29,6 +29,7 @@
 <script>
 import BaseError from './BaseError.vue';
 import InputModel from '@/models/InputModel';
+import TimeModel from '@/models/TimeModel';
 import { chunk } from '@/helpers/array';
 
 export default {
@@ -64,11 +65,11 @@ export default {
     /**
      * Format time
      *
-     * @param {String} time
+     * @param {TimeModel} time
      * @return {String}
      */
     formatTime(time) {
-      return time.label;
+      return time instanceof TimeModel ? time.getTime() : '';
     },
 
     /**

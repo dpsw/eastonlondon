@@ -20,6 +20,10 @@ export default class TimeModel {
     return `${hours}:${minutes}`;
   }
 
+  getDate() {
+    return new Date(this.id);
+  }
+
   isCorrect() {
     const minutes = this.getTime().split(':')[1];
     return AVAILABLE_MINUTES.includes(minutes);

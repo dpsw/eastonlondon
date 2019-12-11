@@ -25,6 +25,10 @@ export default {
       confirmStateBooking: 'booking/confirmBooking',
       reserveTime: 'booking/reserveTime',
       createFakeBooking: 'booking/createFakeBooking',
+      getBookings: 'booking/getBookings',
+      cancelBooking: 'booking/cancelBooking',
+      clearBooking: 'booking/clearBooking',
+      rescheduleBooking: 'booking/rescheduleBooking',
     }),
   },
 };

@@ -9,7 +9,7 @@ export default class CenterModel {
    */
   constructor(id = '', name = '', city = '', address = '') {
     this.id = id;
-    this.name = name;
+    this.label = name;
     this.address = address;
     this.city = city;
   }
@@ -17,7 +17,7 @@ export default class CenterModel {
   static makeCenterFromServerObject(serverObject) {
     const center = new CenterModel();
     center.id = serverObject.id;
-    center.name = serverObject.display_name;
+    center.label = serverObject.display_name;
 
     const addressInfo = serverObject.address_info;
     center.address = addressInfo.address_1;

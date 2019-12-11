@@ -12,6 +12,7 @@ exports.initRoute = (app) => {
   app.post('/api/zenoti/booking/store', ZenotiController.saveBooking);
   app.post('/api/zenoti/booking/confirm', ZenotiController.confirmBooking);
   app.post('/api/zenoti/booking/cancel', ZenotiController.cancelBooking);
+  app.post('/api/zenoti/booking/reschedule', ZenotiController.rescheduleBooking);
 
   app.get('/api/zenoti/times', ZenotiController.getAvailableTime);
   app.post('/api/zenoti/time/reserve', ZenotiController.reserveTime);

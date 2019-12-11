@@ -7,6 +7,7 @@ export const LIST_SERVICES = 'api/zenoti/services';
 export const CREATE_GUEST = 'api/zenoti/guest/store';
 
 export const CREATE_BOOKING = 'api/zenoti/booking/store';
+export const RESCHEDULE_BOOKING = 'api/zenoti/booking/reschedule';
 export const CONFIRM_BOOKING = 'api/zenoti/booking/confirm';
 export const CANCEL_BOOKING = 'api/zenoti/booking/cancel';
 export const GET_BOOKINGS = 'api/zenoti/bookings';

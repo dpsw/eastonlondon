@@ -35,6 +35,7 @@ export default {
   created() {
     // hide page loading if it is showing
     this.setShowLoading(false);
+    this.closeWidget();
   },
 
   methods: {

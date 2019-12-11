@@ -30,6 +30,11 @@ const routes = [
     name: 'your-bookings',
     component: () => import(/* webpackChunkName: "YourBookingsPage" */ '../views/YourBookingsPage.vue'),
   },
+  {
+    path: '/reschedule',
+    name: 'reschedule',
+    component: () => import(/* webpackChunkName: "ReschedulePage" */ '../views/ReschedulePage.vue'),
+  },
 ];
 
 const router = new VueRouter({

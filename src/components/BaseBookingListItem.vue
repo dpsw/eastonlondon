@@ -6,10 +6,10 @@
         {{ booking.formatBooking() }}
       </div>
       <div class="booking-list__actions">
-        <div class="booking-list__change">
+        <div class="booking-list__change" @click="$emit('reschedule', booking)">
           Reschedule
         </div>
-        <div class="booking-list__cancel">
+        <div class="booking-list__cancel" @click="$emit('cancel', booking)">
           Cancel booking
         </div>
       </div>

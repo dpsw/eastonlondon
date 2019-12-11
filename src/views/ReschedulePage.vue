@@ -26,14 +26,12 @@
        </base-input-text>
        <base-input-mask v-model="phoneField"></base-input-mask>
 
-       <base-input-checkbox v-model="agreeWithTermsField"></base-input-checkbox>
-
         <transition name="slide">
             <div class="error" v-if="error"> {{ error }} </div>
         </transition>
 
         <button class="button" @click="goNext">
-            BOOK ME NOW!
+            RESCHEDULE BOOKING
         </button>
     </app-body>
   </div>
@@ -44,7 +42,6 @@ import BaseInputSelect from '@/components/inputs/BaseInputSelect.vue';
 import BaseInputMultipleSelect from '@/components/inputs/BaseInputMultipleSelect.vue';
 import BaseInputDateSelect from '@/components/inputs/BaseInputDateSelect.vue';
 import BaseInputTimeSelect from '@/components/inputs/BaseInputTimeSelect.vue';
-import BaseInputCheckbox from '@/components/inputs/BaseInputCheckbox.vue';
 import BaseInputMask from '@/components/inputs/BaseInputMask.vue';
 import BaseInputText from '@/components/inputs/BaseInputText.vue';
 import InputModel from '@/models/InputModel';
@@ -55,15 +52,16 @@ import UserStateMixin from '@/mixins/UserStateMixin';
 import BookingStateMixin from '@/mixins/BookingStateMixin';
 import BookingModel from '@/models/BookingModel';
 import UserModel from '@/models/UserModel';
+import TimeModel from '@/models/TimeModel';
+import * as dateHelper from '@/helpers/date';
 
 export default {
-  name: 'HomePage',
+  name: 'ReschedulePage',
 
   components: {
     BaseInputSelect,
     BaseInputDateSelect,
     BaseInputTimeSelect,
-    BaseInputCheckbox,
     BaseInputMask,
     BaseInputText,
     BaseInputMultipleSelect,
@@ -73,8 +71,7 @@ export default {
 
   data() {
     return {
-      agreeWithTerms: true,
-      agreeWithTermsErrorMessage: true,
+      selectedTime: null,
 
       centers: [],
       services: [],
@@ -107,7 +104,6 @@ export default {
           this.centerErrorMessage,
           'Choose a location',
         );
-
         field.setValues(this.centers);
         return field;
       },
@@ -157,7 +153,6 @@ export default {
           '',
           'Choose a barber',
         );
-
         field.setValues(this.masters);
         return field;
       },
@@ -189,6 +184,7 @@ export default {
         return field;
       },
       async set(value) {
+        debugger;
         this.booking.date = value;
         // Reset time selected
         this.booking.time = '';
@@ -214,21 +210,6 @@ export default {
       },
       set(value) {
         this.booking.time = value;
-      },
-    },
-
-    agreeWithTermsField: {
-      get() {
-        const field = new InputModel(
-          '',
-          this.agreeWithTerms,
-          this.agreeWithTermsErrorMessage,
-        );
-        field.setValues([{ id: 1, label: 'I agree to the Terms & Conditions' }]);
-        return field;
-      },
-      set(value) {
-        this.agreeWithTerms = value;
       },
     },
 
@@ -264,7 +245,11 @@ export default {
   async created() {
     this.setShowLoading(true);
 
+    this.selectedTime = new TimeModel(this.booking.time.id);
     const centers = await this.getAllCenters();
+
+    this.booking.date = new Date(this.booking.date);
+    this.booking.time = new TimeModel(this.booking.time.id);
 
     if (this.booking.isReadyForGettingAvailableTimes) {
       await this.fetchServicesForCurrentLocation();
@@ -281,11 +266,10 @@ export default {
     async goNext() {
       this.emailErrorMessage = this.user.isValidEmail ? '' : 'Invalid email address';
       this.phoneErrorMessage = this.user.isValidPhone ? '' : 'Invalid phone';
-      this.agreeWithTermsErrorMessage = this.agreeWithTerms ? '' : 'Required field';
       this.centerErrorMessage = this.booking.center && this.booking.center.id ? '' : 'Required field';
       this.servicesErrorMessage = this.booking.service && this.booking.service.length > 0 ? '' : 'Required field';
 
-      if (!this.booking.isReadyForBookingCreating || !this.agreeWithTerms) {
+      if (!this.booking.isReadyForBookingCreating) {
         this.error = 'Please fill out all required fields!';
         if (!this.booking.date || !this.booking.time) {
           this.error = 'Please select date and time';
@@ -294,20 +278,16 @@ export default {
       }
 
       try {
-        // Update state data
-
         this.setShowLoading(true);
 
         this.setStateUser(this.user);
         this.setStateBooking(this.booking);
 
-        await this.saveStateBooking();
-        await this.reserveTime();
-        await this.confirmStateBooking();
+        await this.rescheduleBooking();
 
         this.setShowLoading(false);
 
-        this.$router.push('/success');
+        this.$router.push('/your-bookings');
       } catch (e) {
         this.error = e.message;
         this.setShowLoading(false);
@@ -315,7 +295,7 @@ export default {
     },
 
     goBack() {
-      this.closeWidget();
+      this.$router.push('/your-bookings');
     },
 
     async fetchServicesForCurrentLocation() {
@@ -354,6 +334,17 @@ export default {
 
       if (times.length === 0) {
         this.error = 'There is no free time for the selected date';
+      }
+
+      try {
+        if (this.booking.date && dateHelper.formatDate(this.selectedTime.getDate())
+          === dateHelper.formatDate(this.booking.date)) {
+          // add missing time to times array
+          times.push(new TimeModel(this.selectedTime.id));
+          times = times.sort((t1, t2) => (t1.id < t2.id ? -1 : 1));
+        }
+      } catch (e) {
+        console.log(e.message);
       }
 
       this.availableTimes = times;

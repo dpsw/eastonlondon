@@ -22,6 +22,7 @@
 
 <script>
 import InputModel from '@/models/InputModel';
+import * as dateHelper from '@/helpers/date';
 
 export default {
   name: 'BaseInputDateSelect',
@@ -58,9 +59,7 @@ export default {
      * @return {String}
      */
     formatDate(date) {
-      if (!date && !(date instanceof Date)) { return ''; }
-      const options = { weekday: 'short', day: '2-digit' };
-      return date.toLocaleDateString('en-US', options).split(' ').reverse().join(' ');
+      return dateHelper.formatDate(date);
     },
 
     /**

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import createPersistedState from 'vuex-persistedstate';
 import service from '@/store/service/service';
 import catalog from '@/store/catalog/catalog';
 import user from '@/store/user/user';
@@ -20,4 +21,6 @@ export default new Vuex.Store({
     user,
     booking,
   },
+
+  plugins: [createPersistedState()],
 });

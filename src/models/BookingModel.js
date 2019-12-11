@@ -4,7 +4,7 @@ export default class BookingModel {
    *
    * @param {String} id
    * @param {CenterModel} center
-   * @param {ServiceModel} service
+   * @param {Array} service
    * @param {MasterModel} master
    * @param {Date} date
    * @param {TimeModel} time
@@ -16,6 +16,10 @@ export default class BookingModel {
     this.master = master;
     this.date = date;
     this.time = time;
+
+    // Fields for rescheduling
+    this.invoiceId = 0;
+    this.guestId = 0;
   }
 
   get isReadyForGettingAvailableTimes() {
@@ -41,9 +45,10 @@ export default class BookingModel {
       .replace(',', '')
       .split(' ');
     // Example: 28-Oct-2019 at 12:00
-    const dateStr = `${day}-${month}-${year} at ${this.time}`;
+    const dateStr = `${day}-${month}-${year} at ${this.time.getTime()}`;
 
-    return `${this.service} with ${this.master} @ Easton London ${this.center.label} ${dateStr}`;
+    const serviceStr = this.service.map(s => s.getLabel()).join(', ');
+    return `${serviceStr} with ${this.master.nickname} @ Easton London ${this.center.label} ${dateStr}`;
   }
 
   /**

@@ -356,6 +356,9 @@ body {
   &__with-margin {
     margin-bottom: 15px;
   }
+  &_link {
+    cursor: pointer;
+  }
 }
 
 .text {

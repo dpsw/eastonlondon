@@ -12,18 +12,29 @@
             A confirmation email with the booking details was sent to your inbox.
         </div>
 
-        <div class="title">
+        <div class="title title_link" @click="reschedule">
             EASILY RESCHEDULE A BOOKING!
         </div>
 
-        <button class="button" @click="goNext">REGISTER NOW!</button>
+        <button class="button" @click="goNext" v-if="!user.isLoggedIn">REGISTER NOW!</button>
     </app-body>
   </div>
 </template>
 
 <script>
+import BookingStateMixin from '@/mixins/BookingStateMixin';
+import UserStateMixin from '@/mixins/UserStateMixin';
+
 export default {
   name: 'SuccessPage',
+
+  mixins: [BookingStateMixin, UserStateMixin],
+
+  created() {
+    this.clearBooking();
+    this.user.id = '';
+    this.setStateUser(this.user);
+  },
 
   methods: {
     goNext() {
@@ -31,6 +42,11 @@ export default {
     },
     goBack() {
       this.$router.push('/');
+    },
+    reschedule() {
+      if (this.user.isLoggedIn) {
+        this.$router.push('/your-bookings');
+      }
     },
   },
 };

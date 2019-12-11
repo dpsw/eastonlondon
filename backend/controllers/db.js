@@ -1,4 +1,5 @@
 const mysql = require('mysql2/promise');
+const dateFormat = require('dateformat');
 const helper = require('../services/helper');
 
 const {
@@ -51,4 +52,22 @@ exports.authUser = async (email, password) => {
     }
   }
   return user;
+};
+
+exports.addGuest = async (email, guestId, phone, time) => {
+  const dateTime = dateFormat(new Date(time), 'yyyy-mm-dd HH:MM:ss');
+  await connection.execute(
+    `INSERT INTO \`guests\` (\`email\`, \`guest_id\`, \`phone\`, \`booking_date\`) VALUES ('${email}','${guestId}','${phone}','${dateTime}');`,
+  );
+};
+
+exports.getGuestsByEmail = async (email) => {
+  const today = dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss');
+  const [rows] = await connection.execute(
+    `SELECT * FROM \`guests\` WHERE \`email\` = '${email}' AND booking_date > '${today}'`,
+  );
+  if (rows.length) {
+    return rows.map(r => helper.getGuestFromDBEntity(r));
+  }
+  return [];
 };
