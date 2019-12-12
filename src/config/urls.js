@@ -17,3 +17,5 @@ export const RESERVE_TIME_FOR_BOOKING = 'api/zenoti/time/reserve';
 
 export const LOGIN = 'api/user/signIn';
 export const REGISTRATION = 'api/user/signUp';
+export const SET_PASSWORD_RESET = 'api/user/set-password-reset';
+export const RESET_PASSWORD = 'api/user/reset-password';

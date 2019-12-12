@@ -328,7 +328,7 @@ export default {
 
     async loadTime() {
       if (!this.booking.isReadyForGettingAvailableTimes) {
-        this.error = 'Please fill all fields';
+        this.error = 'Please fill out all required fields!';
         return;
       }
 

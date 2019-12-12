@@ -23,6 +23,8 @@ export default {
       saveStateUser: 'user/saveUser',
       login: 'user/login',
       registration: 'user/registration',
+      setPasswordReset: 'user/setPasswordReset',
+      resetPassword: 'user/resetPassword',
     }),
   },
 };

@@ -26,6 +26,16 @@ const routes = [
     component: () => import(/* webpackChunkName: "LoginPage" */ '../views/LoginPage.vue'),
   },
   {
+    path: '/password-reset',
+    name: 'password-reset',
+    component: () => import(/* webpackChunkName: "PasswordResetPage" */ '../views/PasswordResetPage.vue'),
+  },
+  {
+    path: '/set-new-password',
+    name: 'set-new-password',
+    component: () => import(/* webpackChunkName: "SetNewPasswordPage" */ '../views/SetNewPasswordPage.vue'),
+  },
+  {
     path: '/your-bookings',
     name: 'your-bookings',
     component: () => import(/* webpackChunkName: "YourBookingsPage" */ '../views/YourBookingsPage.vue'),

@@ -242,6 +242,7 @@ body {
       color: $black;
       background-color: $primary-color;
     }
+
     &_hidden {
       visibility: hidden;
     }
@@ -286,6 +287,7 @@ body {
       border: 1px solid $additional-border-color;
       border-radius: 4px;
     }
+
     &_error {
 
       &:before {
@@ -359,6 +361,7 @@ body {
   &__with-margin {
     margin-bottom: 15px;
   }
+
   &_link {
     cursor: pointer;
   }
@@ -423,4 +426,12 @@ body {
   text-align: center;
   color: $error-color;
   margin-top: 10px;
+}
+
+.password-reset-link {
+  @include font-regular-text;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffcf00;
+  cursor: pointer;
 }

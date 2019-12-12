@@ -5,7 +5,7 @@
     <app-body>
 
         <div class="title title__with-margin">
-            LOGIN to your account
+            Reset your password
         </div>
 
        <base-input-text
@@ -14,24 +14,15 @@
        >
        </base-input-text>
 
-
-        <base-input-text
-                v-model="passwordField"
-                input-type="password"
-        >
-        </base-input-text>
-
         <transition name="slide">
             <div class="error" v-if="error"> {{ error }} </div>
         </transition>
 
-        <div class="password-reset-link" @click="goToPasswordReset">Forgot password?</div>
-
-        <button class="button button_transparent" @click="goLogin">
-            LOGIN
+        <button class="button button_transparent" @click="reset">
+            RESET
         </button>
-        <button class="button" @click="goRegistration">
-            REGISTRATION
+        <button class="button" @click="goBack">
+            GO TO LOGIN
         </button>
     </app-body>
   </div>
@@ -44,7 +35,7 @@ import UserStateMixin from '@/mixins/UserStateMixin';
 import ServiceStateMixin from '@/mixins/ServiceStateMixin';
 
 export default {
-  name: 'LoginPage',
+  name: 'PasswordResetPage',
 
   components: {
     BaseInputText,
@@ -54,9 +45,7 @@ export default {
 
   data() {
     return {
-      password: '',
       emailErrorMessage: '',
-      passwordErrorMessage: '',
       error: '',
     };
   },
@@ -75,18 +64,6 @@ export default {
       },
     },
 
-    passwordField: {
-      get() {
-        return new InputModel(
-          'Password',
-          this.password,
-          this.passwordErrorMessage,
-        );
-      },
-      set(value) {
-        this.password = value;
-      },
-    },
   },
 
   created() {
@@ -96,19 +73,14 @@ export default {
   },
 
   methods: {
-    goRegistration() {
-      this.$router.push('/registration');
+    goBack() {
+      this.$router.push('/login');
     },
-    async goLogin() {
+    async reset() {
       this.emailErrorMessage = this.user.isValidEmail ? '' : 'Invalid email address';
-      this.passwordErrorMessage = this.password.length >= 6 ? '' : 'Invalid password. Minimum length 6 symbols';
 
       if (this.emailErrorMessage) {
         this.error = 'Invalid email address';
-        return;
-      }
-      if (this.passwordErrorMessage) {
-        this.error = 'Invalid password. Minimum length 6 symbols';
         return;
       }
 
@@ -116,21 +88,13 @@ export default {
 
       this.setStateUser(this.user);
       try {
-        await this.login(this.password);
-        this.$router.push('/your-bookings');
+        await this.setPasswordReset();
+        this.$router.push('/login');
       } catch (e) {
         console.log(e.message);
         this.error = e.message;
       }
       this.setShowLoading(false);
-    },
-
-    goBack() {
-      this.$router.push('/');
-    },
-
-    goToPasswordReset() {
-      this.$router.push('/password-reset');
     },
   },
 };

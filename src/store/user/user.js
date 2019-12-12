@@ -35,7 +35,7 @@ const actions = {
   },
 
   async registration({ commit, state }, password) {
-    Logger.debug('saveUser', true);
+    Logger.debug('registration', true);
     const response = await usersApi.registration({
       user: state.user,
       password,
@@ -54,7 +54,7 @@ const actions = {
   },
 
   async login({ commit, state }, password) {
-    Logger.debug('saveUser', true);
+    Logger.debug('login', true);
     const response = await usersApi.login({
       user: state.user,
       password,
@@ -70,6 +70,33 @@ const actions = {
     commit(userMutations.SET_USER, newUser);
 
     return newUser;
+  },
+
+
+  async setPasswordReset({ state }) {
+    Logger.debug('setPasswordReset', true);
+    const response = await usersApi.setPasswordReset({
+      user: state.user,
+    });
+
+    const { data } = response;
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+  },
+
+  async resetPassword({ state }, payload) {
+    Logger.debug('resetPassword', true);
+    const response = await usersApi.resetPassword({
+      user: state.user,
+      password: payload.password,
+      token: payload.token,
+    });
+
+    const { data } = response;
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
   },
 };
 
