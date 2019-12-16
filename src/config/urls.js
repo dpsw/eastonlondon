@@ -1,4 +1,4 @@
-export const API_URL = 'http://localhost:8099/';
+export const API_URL = process.env.VUE_APP_API_URL;
 
 export const LIST_ALL_CENTERS = 'api/zenoti/centers';
 export const LIST_MASTERS = 'api/zenoti/masters';

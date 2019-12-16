@@ -11,6 +11,7 @@
         <base-input-text
                 v-model="passwordField"
                 input-type="password"
+                v-if="!success"
         >
         </base-input-text>
 
@@ -25,7 +26,7 @@
         </transition>
 
         <button class="button button_transparent" @click="reset">
-            SET
+            SET NEW PASSWORD
         </button>
         <button class="button" @click="goBack">
             GO TO LOGIN

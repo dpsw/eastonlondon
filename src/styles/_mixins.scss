@@ -13,7 +13,11 @@
     @content;
   }
 }
-
+@mixin only-extra-small-mobile {
+  @media (max-width: (349px)) {
+    @content;
+  }
+}
 @mixin only-mobile {
   @media (max-width: (599px)) {
     @content;

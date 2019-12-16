@@ -19,6 +19,7 @@
         </div>
 
         <button class="button" @click="goNext" v-if="!user.isLoggedIn">REGISTER NOW!</button>
+        <button class="button" @click="checkBookings" v-if="user.isLoggedIn">CHECK BOOKINGS</button>
     </app-body>
   </div>
 </template>
@@ -49,6 +50,9 @@ export default {
       if (this.user.isLoggedIn) {
         this.$router.push('/your-bookings');
       }
+    },
+    checkBookings() {
+      this.$router.push('/your-bookings');
     },
   },
 };

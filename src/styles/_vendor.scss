@@ -100,9 +100,16 @@
   }
 }
 .vs__no-options {
-  color: $gray;
-  font-size: 16px;
-  font-weight: 600;
+
+  @include font-regular-text;
+
+  font-size: 13px;
+  color: #fff;
+  padding: 8px 0 8px 10px;
+  font-weight: 400;
+  background-color: #26264e;
+  border-bottom: 1px solid #38395c;
+  text-align: left;
 }
 .vs__clear {
   fill: $gray;

@@ -35,7 +35,13 @@ export default {
   created() {
     // hide page loading if it is showing
     this.setShowLoading(false);
-    this.closeWidget();
+    // show widget if user try set a new password
+    const isOpenWindow = window.location.href.includes('set-new-password');
+    if (isOpenWindow) {
+      this.openWidget();
+    } else {
+      this.closeWidget();
+    }
   },
 
   methods: {

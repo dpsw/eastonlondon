@@ -9,18 +9,24 @@
         </div>
 
        <base-input-text
+               v-if="!success"
                v-model="emailField"
                input-type="email"
        >
        </base-input-text>
 
         <transition name="slide">
+            <div class="success" v-if="success"> {{ success }} </div>
+        </transition>
+
+        <transition name="slide">
             <div class="error" v-if="error"> {{ error }} </div>
         </transition>
 
-        <button class="button button_transparent" @click="reset">
+        <button class="button button_transparent" @click="reset" v-if="!success">
             RESET
         </button>
+
         <button class="button" @click="goBack">
             GO TO LOGIN
         </button>
@@ -47,6 +53,7 @@ export default {
     return {
       emailErrorMessage: '',
       error: '',
+      success: '',
     };
   },
 
@@ -89,7 +96,7 @@ export default {
       this.setStateUser(this.user);
       try {
         await this.setPasswordReset();
-        this.$router.push('/login');
+        this.success = 'We have e-mailed your password reset link!';
       } catch (e) {
         console.log(e.message);
         this.error = e.message;

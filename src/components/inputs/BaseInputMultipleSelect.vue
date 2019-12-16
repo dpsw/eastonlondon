@@ -32,6 +32,9 @@
                     >
                         {{ option.label }}
                     </li>
+                    <li v-if="options.length === 0" class="vs__no-options">
+                        Sorry, no matching options.
+                    </li>
                 </ul>
             </div>
 
@@ -121,9 +124,9 @@ export default {
         this.value.value.push(option);
       }
 
-      if (this.value.value.length > 0) {
-        this.isOpen = false;
-      }
+      // if (this.value.value.length > 0) {
+      //   this.isOpen = false;
+      // }
 
       this.setSelected(this.value.value);
     },

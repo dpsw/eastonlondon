@@ -50,6 +50,7 @@ import ServiceStateMixin from '@/mixins/ServiceStateMixin';
 import CatalogStateMixin from '@/mixins/CatalogStateMixin';
 import UserStateMixin from '@/mixins/UserStateMixin';
 import BookingStateMixin from '@/mixins/BookingStateMixin';
+import ScrollerMixin from '@/mixins/ScrollerMixin';
 import BookingModel from '@/models/BookingModel';
 import UserModel from '@/models/UserModel';
 import TimeModel from '@/models/TimeModel';
@@ -67,7 +68,7 @@ export default {
     BaseInputMultipleSelect,
   },
 
-  mixins: [CatalogStateMixin, ServiceStateMixin, UserStateMixin, BookingStateMixin],
+  mixins: [CatalogStateMixin, ServiceStateMixin, UserStateMixin, BookingStateMixin, ScrollerMixin],
 
   data() {
     return {
@@ -244,25 +245,33 @@ export default {
   async created() {
     this.setShowLoading(true);
 
-    this.selectedTime = new TimeModel(this.booking.time.id);
-    const centers = await this.getAllCenters();
+    try {
+      this.selectedTime = new TimeModel(this.booking.time.id);
+      const centers = await this.getAllCenters();
 
-    this.booking.date = new Date(this.booking.date);
-    this.booking.time = new TimeModel(this.booking.time.id);
+      this.booking.date = new Date(this.booking.date);
+      this.booking.time = new TimeModel(this.booking.time.id);
 
-    if (this.booking.isReadyForGettingAvailableTimes) {
-      await this.fetchServicesForCurrentLocation();
-      await this.fetchMastersForCurrentLocation();
-      await this.loadTime();
+      if (this.booking.isReadyForGettingAvailableTimes) {
+        await this.fetchServicesForCurrentLocation();
+        await this.fetchMastersForCurrentLocation();
+        await this.loadTime();
+      }
+
+      this.centers = centers;
+    } catch (e) {
+      this.error = e.message;
+      await this.$nextTick();
+      this.scrollToClass('error');
     }
-
-    this.centers = centers;
 
     this.setShowLoading(false);
   },
 
   methods: {
     async goNext() {
+      this.error = '';
+
       this.emailErrorMessage = this.user.isValidEmail ? '' : 'Invalid email address';
       this.phoneErrorMessage = this.user.isValidPhone ? '' : 'Invalid phone';
       this.centerErrorMessage = this.booking.center && this.booking.center.id ? '' : 'Required field';
@@ -273,6 +282,9 @@ export default {
         if (!this.booking.date || !this.booking.time) {
           this.error = 'Please select date and time';
         }
+
+        await this.$nextTick();
+        this.scrollToClass('error');
         return;
       }
 
@@ -289,6 +301,8 @@ export default {
         this.$router.push('/your-bookings');
       } catch (e) {
         this.error = e.message;
+        await this.$nextTick();
+        this.scrollToClass('error');
         this.setShowLoading(false);
       }
     },
@@ -306,12 +320,17 @@ export default {
     },
 
     async loadTime() {
+      this.error = '';
       if (!this.booking.isReadyForGettingAvailableTimes) {
         this.error = 'Please fill all fields';
+        await this.$nextTick();
+        this.scrollToClass('error');
         return;
       }
 
       this.error = '';
+
+      this.setStateBooking(this.booking);
 
       if (!this.user.id && this.user.email && this.user.phone) {
         this.setStateUser(this.user);
@@ -319,7 +338,6 @@ export default {
         this.user = UserModel.cloneUser(this.stateUser);
       }
 
-      this.setStateBooking(this.booking);
 
       let times = [];
       if (!this.user.id) {
@@ -333,6 +351,8 @@ export default {
 
       if (times.length === 0) {
         this.error = 'There is no free time for the selected date';
+        await this.$nextTick();
+        this.scrollToClass('error');
       }
 
       try {

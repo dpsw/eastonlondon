@@ -71,6 +71,7 @@ body {
   width: 375px;
   position: fixed;
   right: 0;
+  top: 0;
   @include only-mobile {
     width: 100%;
   }
@@ -121,6 +122,10 @@ body {
 
 .app-body {
   padding: 0 47px;
+  margin-bottom: 21px;
+  @include only-extra-small-mobile {
+    padding: 0 22px;
+  }
 }
 
 .input {
@@ -425,7 +430,7 @@ body {
   font-weight: 600;
   text-align: center;
   color: $error-color;
-  margin-top: 10px;
+  margin: 10px 0;
 }
 
 .password-reset-link {
@@ -434,4 +439,11 @@ body {
   font-weight: 600;
   color: #ffcf00;
   cursor: pointer;
+}
+
+.success {
+  @include font-main-text;
+  color: $primary-text-color;
+  text-transform: uppercase;
+  text-align: center;
 }
